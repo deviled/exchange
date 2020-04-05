@@ -1,5 +1,5 @@
 import React, {ChangeEvent} from 'react';
-import {formatNumber, isInputCorrect, normalizeInput} from './utils';
+import {formatNumber, isInputCorrect, normalizeInput} from './utils/utils';
 import styles from './CurrencyInput.module.scss';
 
 interface CurrencyInputProps {

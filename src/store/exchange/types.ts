@@ -3,4 +3,6 @@ export interface ExchangeState {
 	toAmount: string;
 	base: string;
 	rates: Record<string, number>;
+	fetchingError: string | null;
+	isFetching: boolean;
 }

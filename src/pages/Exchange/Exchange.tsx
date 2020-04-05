@@ -8,22 +8,31 @@ import {AppDispatch, RootState} from '../../store';
 import {useInterval} from '../../utils/hooks';
 import {convertFrom, convertTo, fetchRates, setFromAmount, setToAmount} from '../../store/exchange/exchangeSlice';
 import styles from './Exchange.module.scss';
+import {Pocket} from '../../store/pockets/types';
 
-const FETCH_RATES_INTERVAL = 10000;
 const CONVERT_DEBOUNCE_TIME = 250;
+const FETCH_RATES_INTERVAL = 10000;
 
 function Exchange() {
 	const dispatch: AppDispatch = useDispatch();
-	const isLoading = useSelector((state: RootState) => state.isLoading);
 	const pockets = useSelector((state: RootState) => state.pockets);
 	const options = useMemo(() => pockets.map(pocketsToOptions), [pockets]);
 	const [basePocket, setBasePocket] = useState(pockets[0]);
 	const [targetPocket, setTargetPocket] = useState(pockets[1]);
-	const {fromAmount, toAmount} = useSelector((state: RootState) => state.exchange);
+	const {fromAmount, toAmount, isFetching} = useSelector((state: RootState) => state.exchange);
 
 	useInterval(() => {
 		dispatch(fetchRates(basePocket.type));
 	}, FETCH_RATES_INTERVAL, [dispatch, basePocket.type]);
+
+	const handleSelectChange = (callback: (pocket: Pocket) => void) => {
+		return (value: string) => {
+			const newPocket = pockets.find(p => p.id === parseInt(value));
+			if (newPocket) {
+				callback && callback(newPocket);
+			}
+		};
+	};
 
 	return (
 		<div className={styles['exchange']}>
@@ -31,45 +40,45 @@ function Exchange() {
 				<Select
 					value={basePocket.id}
 					options={options}
-					onChange={(value: string) => {
-						const newBasePocket = pockets.find(p => p.id === parseInt(value));
-						if (newBasePocket) {
-							setBasePocket(newBasePocket);
-						}
-					}}
+					onChange={
+						handleSelectChange(async (value: Pocket) => {
+							setBasePocket(value);
+							await dispatch(fetchRates(value.type));
+							dispatch(convertTo(targetPocket.type));
+						})
+					}
 				/>
 				<CurrencyInput
 					dataQa='fromPocketInput'
 					value={fromAmount}
-					isDisabled={isLoading}
+					isDisabled={isFetching}
 					onChange={(amount: string) => {
 						dispatch(setFromAmount(amount));
 						debounce(() => {
-							dispatch(convertTo(targetPocket?.type, parseFloat(amount)));
+							dispatch(convertTo(targetPocket?.type));
 						}, CONVERT_DEBOUNCE_TIME)();
 					}}
 				/>
 			</div>
-
 			<div className={styles['exchange__group']}>
 				<Select
 					value={targetPocket.id}
 					options={options}
-					onChange={(value: string) => {
-						const newTargetPocket = pockets.find(p => p.id === parseInt(value));
-						if (newTargetPocket) {
-							setTargetPocket(newTargetPocket);
-						}
-					}}
+					onChange={
+						handleSelectChange((value: Pocket) => {
+							setTargetPocket(value);
+							dispatch(convertFrom(value.type));
+						})
+					}
 				/>
 				<CurrencyInput
 					dataQa='toPocketInput'
 					value={toAmount}
-					isDisabled={isLoading}
+					isDisabled={isFetching}
 					onChange={(amount: string) => {
 						dispatch(setToAmount(amount));
 						debounce(() => {
-							dispatch(convertFrom(targetPocket?.type, parseFloat(amount)));
+							dispatch(convertFrom(targetPocket?.type));
 						}, CONVERT_DEBOUNCE_TIME)();
 					}}
 				/>

@@ -1,7 +1,6 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 import {AppDispatch, RootState} from '../index';
 import {ExchangeState} from './types';
-import {setIsLoading} from '../loader/loaderSlice';
 import * as api from '../../utils/api';
 import {Pocket} from '../pockets/types';
 
@@ -10,6 +9,8 @@ const initialState: ExchangeState = {
 	toAmount: '0',
 	base: '',
 	rates: {},
+	fetchingError: null,
+	isFetching: false,
 };
 
 const exchangeSlice = createSlice({
@@ -28,14 +29,20 @@ const exchangeSlice = createSlice({
 		setToAmount: (state, action: PayloadAction<string>) => {
 			state.toAmount = action.payload;
 		},
+		setIsFetching: (state, action: PayloadAction<boolean>) => {
+			state.isFetching = action.payload;
+		},
+		setError: (state, action: PayloadAction<string | null>) => {
+			state.fetchingError = action.payload;
+		}
 	}
 });
 
-export const {setRates, setBase, setFromAmount, setToAmount} = exchangeSlice.actions;
+export const {setRates, setBase, setFromAmount, setToAmount, setError, setIsFetching} = exchangeSlice.actions;
 
 export const fetchRates = (base: ExchangeState['base']) => {
 	return async (dispatch: AppDispatch) => {
-		dispatch(setIsLoading(true));
+		dispatch(setIsFetching(true));
 		try {
 			const result = await api.fetchRates(base);
 			if (result) {
@@ -43,29 +50,33 @@ export const fetchRates = (base: ExchangeState['base']) => {
 				dispatch(setRates(result.rates));
 			}
 		} catch (error) {
-			console.error('Error while fetching currency rates.');
+			dispatch(setError('Error while fetching currency rates.'));
 		}
-		dispatch(setIsLoading(false));
+		dispatch(setIsFetching(false));
 	};
 };
 
-export const convertTo = (type: Pocket['type'], fromAmount: number) => {
+export const convertTo = (type: Pocket['type']) => {
 	return async (dispatch: AppDispatch, getState: () => RootState) => {
-		if (fromAmount >= 0) {
-			const rate = getState().exchange.rates[type];
-			if (rate) {
-				dispatch(setToAmount((fromAmount * rate).toFixed(2)));
+		const {isFetching, fromAmount, rates, fetchingError} = getState().exchange;
+		if (!isFetching && !fetchingError) {
+			const rate = rates[type];
+			const newAmount = parseFloat(fromAmount) * rate;
+			if (rate && newAmount >= 0) {
+				dispatch(setToAmount(newAmount.toFixed(2)));
 			}
 		}
 	};
 };
 
-export const convertFrom = (type: Pocket['type'], toAmount: number) => {
+export const convertFrom = (type: Pocket['type']) => {
 	return async (dispatch: AppDispatch, getState: () => RootState) => {
-		if (toAmount >= 0) {
-			const rate = getState().exchange.rates[type];
-			if (rate) {
-				dispatch(setFromAmount((toAmount / rate).toFixed(2)));
+		const {isFetching, toAmount, rates, fetchingError} = getState().exchange;
+		if (!isFetching && !fetchingError) {
+			const rate = rates[type];
+			const newAmount = parseFloat(toAmount) / rate;
+			if (rate && newAmount >= 0) {
+				dispatch(setFromAmount(newAmount.toFixed(2)));
 			}
 		}
 	};
