@@ -1,1 +1,10 @@
-.exchange {}
+.exchange {
+  display: flex;
+  flex-direction: column;
+  width: 20rem;
+
+  &__group {
+    display: flex;
+    padding: 1rem;
+  }
+}

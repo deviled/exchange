@@ -26,7 +26,7 @@ function Exchange() {
 	}, FETCH_RATES_INTERVAL, [dispatch, basePocket.type]);
 
 	return (
-		<div className={styles.exchange}>
+		<div className={styles['exchange']}>
 			<div className={styles['exchange__group']}>
 				<Select
 					value={basePocket.id}

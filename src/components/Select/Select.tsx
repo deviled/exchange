@@ -1,4 +1,5 @@
 import React, {ChangeEvent} from 'react';
+import styles from './Select.module.scss';
 
 interface SelectOption {
 	value: any;
@@ -20,21 +21,24 @@ export const handleChangeEvent = (callback: SelectProps['onChange']) => {
 
 export function Select(props: SelectProps) {
 	return (
-        <select
-			data-qa={props.dataQa || null}
-            value={props.value}
-            onChange={handleChangeEvent(props.onChange)}
-        >
-			{
-				props.options.map(o => (
-					<option
-						key={o.value}
-						value={o.value}
-					>
-						{o.label}
-					</option>
-				))
-			}
-        </select>
+		<div className={styles['select']}>
+			<select
+				className={styles['select__input']}
+				data-qa={props.dataQa || null}
+				value={props.value}
+				onChange={handleChangeEvent(props.onChange)}
+			>
+				{
+					props.options.map(o => (
+						<option
+							key={o.value}
+							value={o.value}
+						>
+							{o.label}
+						</option>
+					))
+				}
+			</select>
+		</div>
 	);
 }

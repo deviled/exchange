@@ -1,5 +1,6 @@
 import React, {ChangeEvent} from 'react';
 import {formatNumber, isInputCorrect, normalizeInput} from './utils';
+import styles from './CurrencyInput.module.scss';
 
 interface CurrencyInputProps {
 	dataQa?: string;
@@ -20,6 +21,7 @@ export const handleChangeEvent = (callback: CurrencyInputProps['onChange']) => {
 export function CurrencyInput(props: CurrencyInputProps) {
 	return (
 		<input
+			className={styles['currency-input']}
 			disabled={props.isDisabled}
 			data-qa={props.dataQa || null}
 			type='text'
