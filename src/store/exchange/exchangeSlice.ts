@@ -1,57 +1,73 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 import {AppDispatch, RootState} from '../index';
-import {ExchangeState} from './types';
-import {Pocket} from '../pockets/types';
+import {CalcAmount, ExchangeState} from './types';
+import {selectCurrentExchangeRate} from '../currency/currencySlice';
 
 const initialState: ExchangeState = {
 	baseAmount: '0',
 	targetAmount: '0',
-	exchangeError: null,
+	isTargetInputEdited: false,
 };
 
 const exchangeSlice = createSlice({
 	name: 'exchange',
 	initialState,
 	reducers: {
-		setBaseAmount: (state, action: PayloadAction<string>) => {
-			state.baseAmount = action.payload;
+		setTargetInputEdited: (state, action: PayloadAction<boolean>) => {
+			state.isTargetInputEdited = action.payload;
 		},
-		setTargetAmount: (state, action: PayloadAction<string>) => {
-			state.targetAmount = action.payload;
+		setBaseAmount: (state, action: PayloadAction<ExchangeState['baseAmount']>) => {
+			if (parseFloat(state.baseAmount) >= 0) {
+				state.baseAmount = action.payload;
+			}
 		},
-		setError: (state, action: PayloadAction<string | null>) => {
-			state.exchangeError = action.payload;
-		}
-	}
-});
-
-export const {setBaseAmount, setTargetAmount, setError} = exchangeSlice.actions;
-
-export const convertToTarget = (type: Pocket['type']) => {
-	return async (dispatch: AppDispatch, getState: () => RootState) => {
-		const {fetchingError, current} = getState().rates;
-		const {baseAmount} = getState().exchange;
-		if (!fetchingError) {
-			const rate = current[type];
-			const newAmount = parseFloat(baseAmount) * rate;
-			if (rate && newAmount >= 0) {
-				dispatch(setTargetAmount(newAmount.toFixed(2)));
+		setTargetAmount: (state, action: PayloadAction<ExchangeState['targetAmount']>) => {
+			if (parseFloat(state.targetAmount) >= 0) {
+				state.targetAmount = action.payload;
+			}
+		},
+		calcBaseAmount: (state, action: PayloadAction<CalcAmount>) => {
+			if (action.payload.rate) {
+				const amount = parseFloat(action.payload.amount);
+				state.baseAmount = (amount / action.payload.rate).toString();
+			}
+		},
+		calcTargetAmount: (state, action: PayloadAction<CalcAmount>) => {
+			if (action.payload.rate) {
+				const amount = parseFloat(action.payload.amount);
+				state.targetAmount = (amount * action.payload.rate).toString();
 			}
 		}
+	},
+});
+
+export const {setTargetInputEdited, setBaseAmount, setTargetAmount, calcBaseAmount, calcTargetAmount} = exchangeSlice.actions;
+
+export const baseAmountUpdated = (amount: string) => {
+	return async (dispatch: AppDispatch, getState: () => RootState) => {
+		const rate = selectCurrentExchangeRate(getState());
+		dispatch(setTargetInputEdited(false));
+		dispatch(setBaseAmount(amount));
+		dispatch(calcTargetAmount({amount, rate}));
 	};
 };
 
-export const convertToBase = (type: Pocket['type']) => {
+export const targetAmountUpdated = (amount: string) => {
 	return async (dispatch: AppDispatch, getState: () => RootState) => {
-		const {fetchingError, current} = getState().rates;
-		const {targetAmount} = getState().exchange;
-		if (!fetchingError) {
-			const rate = current[type];
-			const newAmount = parseFloat(targetAmount) / rate;
-			if (rate && newAmount >= 0) {
-				dispatch(setBaseAmount(newAmount.toFixed(2)));
-			}
+		const rate = selectCurrentExchangeRate(getState());
+		dispatch(setTargetInputEdited(true));
+		dispatch(setTargetAmount(amount));
+		dispatch(calcBaseAmount({amount, rate}));
+	};
+};
+
+export const currencyRatesUpdated = () => {
+	return async (dispatch: AppDispatch, getState: () => RootState) => {
+		const {baseAmount, targetAmount, isTargetInputEdited} = getState().exchange;
+		if (isTargetInputEdited) {
+			return dispatch(targetAmountUpdated(targetAmount));
 		}
+		return dispatch(baseAmountUpdated(baseAmount));
 	};
 };
 

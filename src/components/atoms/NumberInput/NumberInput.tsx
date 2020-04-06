@@ -1,15 +1,15 @@
 import React, {ChangeEvent} from 'react';
-import {formatNumber, isInputCorrect, normalizeInput} from './utils/utils';
-import styles from './CurrencyInput.module.scss';
+import {formatInput, isInputCorrect, normalizeInput} from './utils';
+import styles from './NumberInput.module.scss';
 
-interface CurrencyInputProps {
+interface NumberInputProps {
 	dataQa?: string;
 	value: string;
 	isDisabled?: boolean;
-	onChange: (amount: string) => void;
+	onChange?: (amount: string) => void;
 }
 
-export const handleChangeEvent = (callback: CurrencyInputProps['onChange']) => {
+export const handleChangeEvent = (callback: NumberInputProps['onChange']) => {
 	return ({target}: ChangeEvent<HTMLInputElement>) => {
 		const amount = normalizeInput(target.value) || '0';
 		if (isInputCorrect(amount)) {
@@ -18,16 +18,16 @@ export const handleChangeEvent = (callback: CurrencyInputProps['onChange']) => {
 	};
 };
 
-export function CurrencyInput(props: CurrencyInputProps) {
+export function NumberInput(props: NumberInputProps) {
 	return (
 		<input
-			className={styles['currency-input']}
+			className={styles['number-input']}
 			disabled={props.isDisabled}
 			data-qa={props.dataQa || null}
 			type='text'
 			inputMode='decimal'
 			onChange={handleChangeEvent(props.onChange)}
-			value={formatNumber(props.value)}
+			value={formatInput(props.value)}
 		/>
 	);
 }

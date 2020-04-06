@@ -1,46 +1,50 @@
-import React, {useEffect, useMemo} from 'react';
-import debounce from 'lodash.debounce';
+import React, {useMemo} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
-import {CurrencyInput} from '../../components/CurrencyInput/CurrencyInput';
-import {Select} from '../../components/Select/Select';
-import {pocketsToOptions} from './utils';
+import {NumberInput} from '../../components/atoms/NumberInput/NumberInput';
+import {Select} from '../../components/atoms/Select/Select';
+import {Pocket} from '../../store/pockets/types';
 import {AppDispatch, RootState} from '../../store';
 import {useInterval} from '../../utils/hooks';
-import {fetchRates} from '../../store/rates/ratesSlice';
+import {fetchRatesBy, selectCurrentExchangeRate} from '../../store/currency/currencySlice';
 import styles from './Exchange.module.scss';
-import {Pocket} from '../../store/pockets/types';
-import {convertToBase, convertToTarget, setBaseAmount, setTargetAmount} from '../../store/exchange/exchangeSlice';
-import {setBasePocket, setTargetPocket, switchPockets} from '../../store/pockets/pocketsSlice';
+import {baseAmountUpdated, targetAmountUpdated} from '../../store/exchange/exchangeSlice';
+import {basePocketUpdated, swapPockets, targetPocketUpdated} from '../../store/pockets/pocketsSlice';
+import {Button} from '../../components/atoms/Button/Button';
+import {formatDecimal} from '../../utils/utils';
 
-const CONVERT_DEBOUNCE_TIME = 250;
 const FETCH_RATES_INTERVAL = 10000;
 
-function Exchange() {
+const pocketsToOptions = (pocket: Pocket) => ({
+	value: pocket.id,
+	label: pocket.type,
+});
+
+export function Exchange() {
 	const dispatch: AppDispatch = useDispatch();
-	const allPockets = useSelector((state: RootState) => state.pockets.all);
-	const options = useMemo(() => allPockets.map(pocketsToOptions), [allPockets]);
+	const rate = useSelector(selectCurrentExchangeRate);
+	const pockets = useSelector((state: RootState) => state.pockets.all);
+	const options = useMemo(() => pockets.map(pocketsToOptions), [pockets]);
 	const {basePocket, targetPocket} = useSelector((state: RootState) => state.pockets);
 	const {baseAmount, targetAmount} = useSelector((state: RootState) => state.exchange);
 
-	useEffect(() => {
+	useInterval(async () => {
 		if (basePocket) {
-			dispatch(fetchRates(basePocket.type));
-		}
-	});
-
-	useInterval(() => {
-		if (basePocket) {
-			dispatch(fetchRates(basePocket.type));
+			dispatch(fetchRatesBy(basePocket.type));
 		}
 	}, FETCH_RATES_INTERVAL, [dispatch, basePocket]);
 
-	const handleSelectChange = (callback: (pocket: Pocket) => void) => {
-		return (value: string) => {
-			const newPocket = allPockets.find(p => p.id === parseInt(value));
-			if (newPocket) {
-				callback && callback(newPocket);
-			}
-		};
+	const getBalanceLabel = (pocket: Pocket | null) => {
+		if (pocket) {
+			return `Balance: ${formatDecimal(pocket?.balance || 0)}${pocket?.symbol}`;
+		}
+		return '';
+	};
+
+	const getExchangeRateTitle = () => {
+		if (rate) {
+			return `1${basePocket?.symbol} = ${formatDecimal(rate)}${targetPocket?.symbol}`;
+		}
+		return null;
 	};
 
 	return (
@@ -49,56 +53,44 @@ function Exchange() {
 				<Select
 					value={basePocket?.id}
 					options={options}
-					onChange={
-						handleSelectChange(async (value: Pocket) => {
-							if (value.type === targetPocket?.type) {
-								await dispatch(switchPockets());
-							} else {
-								dispatch(setBasePocket(value));
-								await dispatch(fetchRates(value.type));
-								targetPocket && dispatch(convertToTarget(targetPocket.type));
-							}
-						})
-					}
+					onChange={(pocketId: string) => {
+						dispatch(basePocketUpdated(pocketId));
+					}}
 				/>
-				<CurrencyInput
+				<NumberInput
 					dataQa='fromPocketInput'
 					value={baseAmount}
 					onChange={(amount: string) => {
-						dispatch(setBaseAmount(amount));
-						debounce(() => {
-							targetPocket && dispatch(convertToTarget(targetPocket.type));
-						}, CONVERT_DEBOUNCE_TIME)();
+						dispatch(baseAmountUpdated(amount));
 					}}
 				/>
 			</div>
+			<label>{getBalanceLabel(basePocket)}</label>
 			<div className={styles['exchange__group']}>
 				<Select
 					value={targetPocket?.id}
 					options={options}
-					onChange={
-						handleSelectChange((value: Pocket) => {
-							if (value.type === basePocket?.type) {
-								dispatch(switchPockets());
-							} else {
-								dispatch(setTargetPocket(value));
-								value && dispatch(convertToTarget(value.type));
-							}
-						})
-					}
+					onChange={(pocketId: string) => {
+						dispatch(targetPocketUpdated(pocketId));
+					}}
 				/>
-				<CurrencyInput
+				<NumberInput
 					dataQa='toPocketInput'
 					value={targetAmount}
 					onChange={(amount: string) => {
-						dispatch(setTargetAmount(amount));
-						debounce(() => {
-							targetPocket && dispatch(convertToBase(targetPocket.type));
-						}, CONVERT_DEBOUNCE_TIME)();
+						dispatch(targetAmountUpdated(amount));
 					}}
 				/>
 			</div>
-			<button onClick={() => dispatch(switchPockets())}>Switch pockets</button>
+			<label>{getBalanceLabel(targetPocket)}</label>
+			<div className={styles['exchange__group']}>
+				<Button
+					text='Exchange'
+					onClick={() => dispatch(swapPockets())}
+					tabIndex={0}
+				/>
+			</div>
+			<label>{getExchangeRateTitle()}</label>
 		</div>
 	);
 }

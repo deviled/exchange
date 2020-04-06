@@ -1,12 +1,12 @@
 import {combineReducers, configureStore} from '@reduxjs/toolkit';
-import pocketsSlice from './pockets/pocketsSlice';
 import exchangeSlice from './exchange/exchangeSlice';
-import ratesSlice from './rates/ratesSlice';
+import currencySlice from './currency/currencySlice';
+import pocketsSlice from './pockets/pocketsSlice';
 
 const rootReducer = combineReducers({
-	rates: ratesSlice,
+	exchange: exchangeSlice,
+	currency: currencySlice,
 	pockets: pocketsSlice,
-	exchange: exchangeSlice
 });
 
 export const store = configureStore({

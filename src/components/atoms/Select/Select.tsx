@@ -10,7 +10,7 @@ interface SelectProps {
 	dataQa?: string;
 	value: any;
 	options: Array<SelectOption>;
-	onChange: (value: string) => void;
+	onChange?: (value: string) => void;
 }
 
 export const handleChangeEvent = (callback: SelectProps['onChange']) => {

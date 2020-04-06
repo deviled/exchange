@@ -1,9 +1,9 @@
-import {RatesState} from '../store/rates/types';
+import {CurrencyState} from '../store/currency/types';
 
 const FETCH_RATES_API = 'https://api.exchangeratesapi.io/latest';
-const FETCH_ACCOUNTS_API = '/fakeAccounts.json';
+const FETCH_POCKETS_API = '/fakePockets.json';
 
-export async function fetchRates(base: RatesState['base']) {
+export async function fetchRatesBy(base: CurrencyState['base']) {
 	const resp = await fetch(`${FETCH_RATES_API}?base=${base}`, {
 		method: 'GET',
 	});
@@ -13,8 +13,8 @@ export async function fetchRates(base: RatesState['base']) {
 	return null;
 }
 
-export async function fetchAccounts() {
-	const resp = await fetch(FETCH_ACCOUNTS_API, {
+export async function fetchPockets() {
+	const resp = await fetch(FETCH_POCKETS_API, {
 		method: 'GET',
 	});
 	if (resp?.ok) {
