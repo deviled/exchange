@@ -1,44 +1,55 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
-import {Pocket} from './types';
+import {Pocket, PocketsState} from './types';
+import {AppDispatch} from '../index';
+import * as api from '../../utils/api';
 
-// Ideally should be retrieved via api
-const initialState: Pocket[] = [
-	{
-		id: 1,
-		type: 'EUR',
-		balance: 15.08,
-		symbol: '€'
-	},
-	{
-		id: 2,
-		type: 'GBP',
-		balance: 1.99,
-		symbol: '£',
-	},
-	{
-		id: 3,
-		type: 'USD',
-		balance: 0.00,
-		symbol: '$'
-	}
-];
+const initialState: PocketsState = {
+	isFetching: false,
+	all: [],
+	basePocket: null,
+	targetPocket: null,
+};
 
 const pocketsSlice = createSlice({
 	name: 'pockets',
 	initialState,
 	reducers: {
-		setPockets: (state, action: PayloadAction<Pocket[]>) => {
-			return action.payload;
+		setIsFetching: (state, action: PayloadAction<boolean>) => {
+			state.isFetching = action.payload;
+		},
+		setAllPockets: (state, action: PayloadAction<Pocket[]>) => {
+			state.all = action.payload;
 		},
 		updatePocket: (state, action: PayloadAction<Pocket>) => {
-			const pocketIndex = state.findIndex(pocket => pocket.id === action.payload.id);
+			const pocketIndex = state.all.findIndex(p => p.id === action.payload?.id);
 			if (pocketIndex > -1) {
-				state[pocketIndex] = action.payload;
+				state.all[pocketIndex] = action.payload;
 			}
-		}
+		},
+		setBasePocket: (state, action: PayloadAction<Pocket | null>) => {
+			state.basePocket = action.payload;
+		},
+		setTargetPocket: (state, action: PayloadAction<Pocket | null>) => {
+			state.targetPocket = action.payload;
+		},
 	}
 });
 
-export const {setPockets, updatePocket} = pocketsSlice.actions;
+export const {setIsFetching, setBasePocket, setTargetPocket, setAllPockets, updatePocket} = pocketsSlice.actions;
+
+export const fetchAccounts = () => {
+	return async (dispatch: AppDispatch) => {
+		dispatch(setIsFetching(true));
+		try {
+			const result = await api.fetchAccounts();
+			if (result) {
+				dispatch(setAllPockets(result));
+			}
+		} catch (error) {
+			console.error('Error while fetching accounts.');
+		}
+		dispatch(setIsFetching(false));
+	};
+};
 
 export default pocketsSlice.reducer;

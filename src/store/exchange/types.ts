@@ -1,8 +1,5 @@
 export interface ExchangeState {
-	fromAmount: string;
-	toAmount: string;
-	base: string;
-	rates: Record<string, number>;
-	fetchingError: string | null;
-	isFetching: boolean;
+	baseAmount: string;
+	targetAmount: string;
+	exchangeError: string | null;
 }

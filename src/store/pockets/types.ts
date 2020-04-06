@@ -5,3 +5,10 @@ export interface Pocket {
 	symbol: string;
 }
 
+export interface PocketsState {
+	isFetching: boolean;
+	all: Pocket[];
+	basePocket: Pocket | null;
+	targetPocket: Pocket | null;
+}
+
