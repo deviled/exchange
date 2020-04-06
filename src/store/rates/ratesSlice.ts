@@ -6,7 +6,6 @@ import {RatesState} from './types';
 const initialState: RatesState = {
 	current: {},
 	base: '',
-	isFetching: false,
 	fetchingError: null,
 };
 
@@ -20,20 +19,16 @@ const ratesSlice = createSlice({
 		setBase: (state, action: PayloadAction<string>) => {
 			state.base = action.payload;
 		},
-		setIsFetching: (state, action: PayloadAction<boolean>) => {
-			state.isFetching = action.payload;
-		},
 		setError: (state, action: PayloadAction<string | null>) => {
 			state.fetchingError = action.payload;
 		}
 	}
 });
 
-export const {setCurrent, setBase, setIsFetching, setError} = ratesSlice.actions;
+export const {setCurrent, setBase, setError} = ratesSlice.actions;
 
 export const fetchRates = (base: RatesState['base']) => {
 	return async (dispatch: AppDispatch) => {
-		dispatch(setIsFetching(true));
 		try {
 			const result = await api.fetchRates(base);
 			if (result) {
@@ -43,7 +38,6 @@ export const fetchRates = (base: RatesState['base']) => {
 		} catch (error) {
 			dispatch(setError('Error while fetching currency rates.'));
 		}
-		dispatch(setIsFetching(false));
 	};
 };
 

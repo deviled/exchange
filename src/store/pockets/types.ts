@@ -2,7 +2,7 @@ export interface Pocket {
 	id: number | string;
 	type: string;
 	balance: number;
-	symbol: string;
+	isActive?: boolean;
 }
 
 export interface PocketsState {

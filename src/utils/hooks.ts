@@ -13,7 +13,6 @@ export const useInterval = (
 	}, [callback]);
 
 	useDeepCompareEffect(() => {
-		callback && callback();
 		const intervalId = setInterval(callbackRef.current, milliseconds);
 		return () => clearInterval(intervalId);
 	}, [milliseconds, ...deps]);

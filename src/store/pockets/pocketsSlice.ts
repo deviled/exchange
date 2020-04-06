@@ -1,7 +1,9 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 import {Pocket, PocketsState} from './types';
-import {AppDispatch} from '../index';
+import {AppDispatch, RootState} from '../index';
 import * as api from '../../utils/api';
+import {fetchRates} from '../rates/ratesSlice';
+import {convertToTarget} from '../exchange/exchangeSlice';
 
 const initialState: PocketsState = {
 	isFetching: false,
@@ -41,14 +43,28 @@ export const fetchAccounts = () => {
 	return async (dispatch: AppDispatch) => {
 		dispatch(setIsFetching(true));
 		try {
-			const result = await api.fetchAccounts();
-			if (result) {
-				dispatch(setAllPockets(result));
+			const pockets = await api.fetchAccounts();
+			if (pockets) {
+				dispatch(setAllPockets(pockets));
+				dispatch(setBasePocket(pockets.find((p: Pocket) => p.isActive)));
+				dispatch(setTargetPocket(pockets.find((p:Pocket) => !p.isActive)));
 			}
 		} catch (error) {
 			console.error('Error while fetching accounts.');
 		}
 		dispatch(setIsFetching(false));
+	};
+};
+
+export const switchPockets = () => {
+	return async (dispatch: AppDispatch, getState: () => RootState) => {
+		const {basePocket, targetPocket} = getState().pockets;
+		if (basePocket && targetPocket) {
+			dispatch(setBasePocket(targetPocket));
+			dispatch(setTargetPocket(basePocket));
+			await dispatch(fetchRates(targetPocket.type));
+			await dispatch(convertToTarget(basePocket.type))
+		}
 	};
 };
 

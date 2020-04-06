@@ -29,9 +29,9 @@ export const {setBaseAmount, setTargetAmount, setError} = exchangeSlice.actions;
 
 export const convertToTarget = (type: Pocket['type']) => {
 	return async (dispatch: AppDispatch, getState: () => RootState) => {
-		const {isFetching, fetchingError, current} = getState().rates;
+		const {fetchingError, current} = getState().rates;
 		const {baseAmount} = getState().exchange;
-		if (!isFetching && !fetchingError) {
+		if (!fetchingError) {
 			const rate = current[type];
 			const newAmount = parseFloat(baseAmount) * rate;
 			if (rate && newAmount >= 0) {
@@ -43,9 +43,9 @@ export const convertToTarget = (type: Pocket['type']) => {
 
 export const convertToBase = (type: Pocket['type']) => {
 	return async (dispatch: AppDispatch, getState: () => RootState) => {
-		const {isFetching, fetchingError, current} = getState().rates;
+		const {fetchingError, current} = getState().rates;
 		const {targetAmount} = getState().exchange;
-		if (!isFetching && !fetchingError) {
+		if (!fetchingError) {
 			const rate = current[type];
 			const newAmount = parseFloat(targetAmount) / rate;
 			if (rate && newAmount >= 0) {
