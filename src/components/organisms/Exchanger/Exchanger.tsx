@@ -16,6 +16,7 @@ export function Exchanger() {
 	const dispatch: AppDispatch = useDispatch();
 	const {basePocket, targetPocket} = useSelector((state: RootState) => state.pockets);
 	const {baseAmount, targetAmount} = useSelector((state: RootState) => state.exchange);
+	const isBaseAmountZero = parseFloat(baseAmount) === 0;
 	const isBalanceExceeded = Boolean(basePocket && parseFloat(baseAmount) > parseFloat(basePocket.balance));
 
 	useInterval(async () => {
@@ -52,7 +53,7 @@ export function Exchanger() {
 			<Button
 				onClick={() => dispatch(exchange())}
 				tabIndex={0}
-				isDisabled={isBalanceExceeded}
+				isDisabled={isBalanceExceeded || isBaseAmountZero}
 			>
 				{'Exchange'}
 			</Button>
@@ -61,7 +62,6 @@ export function Exchanger() {
 				buttonStyles={styles['exchange__swap']}
 			>
 				{'Swap Pockets'}
-				{/*<SwapIcon className={styles['exchange__swap-icon']} />*/}
 			</Button>
 		</div>
 	);

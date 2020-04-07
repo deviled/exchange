@@ -18,25 +18,25 @@ const exchangeSlice = createSlice({
 			state.isTargetInputEdited = action.payload;
 		},
 		setBaseAmount: (state, action: PayloadAction<ExchangeState['baseAmount']>) => {
-			if (parseFloat(state.baseAmount) >= 0) {
-				state.baseAmount = action.payload;
-			}
+			state.baseAmount = action.payload;
 		},
 		setTargetAmount: (state, action: PayloadAction<ExchangeState['targetAmount']>) => {
-			if (parseFloat(state.targetAmount) >= 0) {
-				state.targetAmount = action.payload;
-			}
+			state.targetAmount = action.payload;
 		},
 		calcBaseAmount: (state, action: PayloadAction<CalcAmount>) => {
 			const amount = parseFloat(action.payload.amount);
 			if (amount && action.payload.rate) {
 				state.baseAmount = (amount / action.payload.rate).toFixed(2);
+			} else {
+				state.baseAmount = '0';
 			}
 		},
 		calcTargetAmount: (state, action: PayloadAction<CalcAmount>) => {
 			const amount = parseFloat(action.payload.amount);
 			if (amount && action.payload.rate) {
 				state.targetAmount = (amount * action.payload.rate).toFixed(2);
+			} else {
+				state.targetAmount = '0';
 			}
 		}
 	},
