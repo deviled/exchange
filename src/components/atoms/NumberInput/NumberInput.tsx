@@ -7,6 +7,7 @@ interface NumberInputProps {
 	value: string;
 	isDisabled?: boolean;
 	onChange?: (amount: string) => void;
+	className?: string;
 }
 
 export const handleChangeEvent = (callback: NumberInputProps['onChange']) => {
@@ -21,7 +22,7 @@ export const handleChangeEvent = (callback: NumberInputProps['onChange']) => {
 export function NumberInput(props: NumberInputProps) {
 	return (
 		<input
-			className={styles['number-input']}
+			className={[styles['number-input'], props.className].filter(Boolean).join(' ')}
 			disabled={props.isDisabled}
 			data-qa={props.dataQa || null}
 			type='text'

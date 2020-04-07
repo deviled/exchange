@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react';
-import Exchange from './Exchange/Exchange';
+import Exchanger from '../components/organisms/Exchanger/Exchanger';
 import {useDispatch, useSelector} from 'react-redux';
 import {fetchPockets} from '../store/pockets/pocketsSlice';
 import {AppDispatch, RootState} from '../store';
@@ -14,7 +14,7 @@ export function App() {
 
 	if (!pockets.isFetching) {
 		return (
-			<Exchange/>
+			<Exchanger/>
 		);
 	}
 	return null;

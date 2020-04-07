@@ -3,13 +3,7 @@ import {Pocket, PocketsState} from './types';
 import {AppDispatch, RootState} from '../index';
 import * as api from '../../utils/api';
 import {fetchRatesBy} from '../currency/currencySlice';
-import {
-	baseAmountUpdated,
-	setBaseAmount,
-	setTargetAmount,
-	setTargetInputEdited,
-	targetAmountUpdated
-} from '../exchange/exchangeSlice';
+import {baseAmountUpdated, setBaseAmount, setTargetAmount, setTargetInputEdited} from '../exchange/exchangeSlice';
 
 const initialState: PocketsState = {
 	isFetching: false,
@@ -77,7 +71,7 @@ export const fetchPockets = () => {
 				dispatch(setTargetPocket(pockets.find((p: Pocket) => !p.isMainPocket)));
 			}
 		} catch (error) {
-			console.error('Error while fetching accounts.');
+			console.error(error);
 		}
 		dispatch(setIsFetching(false));
 	};
@@ -129,11 +123,12 @@ export const basePocketChanged = (pocketId: string) => {
 };
 
 export const targetPocketChanged = (pocketId: string) => {
-	return async (dispatch: AppDispatch, getState: () => RootState) => {
+	return async (
+		dispatch: AppDispatch, getState: () => RootState) => {
 		const newTargetPocket = selectPocketById(getState(), parseInt(pocketId));
 		if (newTargetPocket?.id !== getState().pockets.basePocket?.id) {
 			dispatch(setTargetPocket(newTargetPocket));
-			return dispatch(targetAmountUpdated(getState().exchange.targetAmount));
+			return dispatch(baseAmountUpdated(getState().exchange.baseAmount));
 		}
 		return dispatch(swapPockets());
 	};

@@ -11,6 +11,7 @@ interface SelectProps {
 	value: any;
 	options: Array<SelectOption>;
 	onChange?: (value: string) => void;
+	styles?: string;
 }
 
 export const handleChangeEvent = (callback: SelectProps['onChange']) => {
@@ -23,7 +24,7 @@ export function Select(props: SelectProps) {
 	return (
 		<div className={styles['select']}>
 			<select
-				className={styles['select__input']}
+				className={[styles['select__input'], props.styles].filter(Boolean).join(' ')}
 				data-qa={props.dataQa || null}
 				value={props.value}
 				onChange={handleChangeEvent(props.onChange)}

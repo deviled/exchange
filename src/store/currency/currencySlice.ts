@@ -42,7 +42,7 @@ export const fetchRatesBy = (base: CurrencyState['base'] = '') => {
 				dispatch(currencyRatesUpdated());
 			}
 		} catch (error) {
-			console.error('Error while fetching currency rates.');
+			console.error(error);
 		}
 	};
 };

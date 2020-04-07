@@ -10,7 +10,7 @@ export async function fetchRatesBy(base: CurrencyState['base']) {
 	if (resp?.ok) {
 		return await resp.json();
 	}
-	return null;
+	throw new Error('Error while fetching currency rates.');
 }
 
 export async function fetchPockets() {
@@ -20,5 +20,5 @@ export async function fetchPockets() {
 	if (resp?.ok) {
 		return await resp.json();
 	}
-	return null;
+	throw new Error('Error while fetching pockets.');
 }

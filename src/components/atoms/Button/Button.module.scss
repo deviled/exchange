@@ -10,13 +10,17 @@
   color: white;
   background: $primaryColor;
   padding: 1rem;
-  border-radius: 4px;
+  border-radius: $borderRadius;
   cursor: pointer;
   margin-bottom: 1.125rem;
   transition: 250ms background linear;
 
   &:hover {
     background: lighten($primaryColor, 10%);
+  }
+
+  &:disabled {
+    background: lighten($primaryColor, 30%);
   }
 
   &:last-child {

@@ -1,0 +1,32 @@
+@import '../../../styles/variables';
+
+.pocket {
+  display: block;
+  width: 100%;
+  margin-bottom: 1.5rem;
+
+  &__row {
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 0.2rem;
+    justify-content: space-between;
+  }
+
+  &__error {
+    color: $errorColor;
+  }
+
+  &__select {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+
+  &__input {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+  }
+
+  &__balance-label {
+    color: $disabledTextColor;
+  }
+}

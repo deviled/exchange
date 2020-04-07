@@ -7,10 +7,11 @@ describe('Button', () => {
 		const callback = jest.fn();
 		const wrapper = shallow(
 			<Button
-				text={overrides?.text || 'Test'}
 				type={overrides?.type || 'button'}
 				onClick={overrides?.onClick || callback}
-			/>
+			>
+				{'Test'}
+			</Button>
 		);
 		return {wrapper, callback};
 	};
