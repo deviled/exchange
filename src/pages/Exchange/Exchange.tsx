@@ -7,8 +7,8 @@ import {AppDispatch, RootState} from '../../store';
 import {useInterval} from '../../utils/hooks';
 import {fetchRatesBy, selectCurrentExchangeRate} from '../../store/currency/currencySlice';
 import styles from './Exchange.module.scss';
-import {baseAmountUpdated, targetAmountUpdated} from '../../store/exchange/exchangeSlice';
-import {basePocketUpdated, swapPockets, targetPocketUpdated} from '../../store/pockets/pocketsSlice';
+import {baseAmountUpdated, exchange, targetAmountUpdated} from '../../store/exchange/exchangeSlice';
+import {basePocketChanged, targetPocketChanged} from '../../store/pockets/pocketsSlice';
 import {Button} from '../../components/atoms/Button/Button';
 import {formatDecimal} from '../../utils/utils';
 
@@ -35,7 +35,8 @@ export function Exchange() {
 
 	const getBalanceLabel = (pocket: Pocket | null) => {
 		if (pocket) {
-			return `Balance: ${formatDecimal(pocket?.balance || 0)}${pocket?.symbol}`;
+			const balance = parseFloat(pocket.balance);
+			return `Balance: ${formatDecimal(balance, 2)}${pocket?.symbol}`;
 		}
 		return '';
 	};
@@ -54,7 +55,7 @@ export function Exchange() {
 					value={basePocket?.id}
 					options={options}
 					onChange={(pocketId: string) => {
-						dispatch(basePocketUpdated(pocketId));
+						dispatch(basePocketChanged(pocketId));
 					}}
 				/>
 				<NumberInput
@@ -71,7 +72,7 @@ export function Exchange() {
 					value={targetPocket?.id}
 					options={options}
 					onChange={(pocketId: string) => {
-						dispatch(targetPocketUpdated(pocketId));
+						dispatch(targetPocketChanged(pocketId));
 					}}
 				/>
 				<NumberInput
@@ -86,7 +87,7 @@ export function Exchange() {
 			<div className={styles['exchange__group']}>
 				<Button
 					text='Exchange'
-					onClick={() => dispatch(swapPockets())}
+					onClick={() => dispatch(exchange())}
 					tabIndex={0}
 				/>
 			</div>

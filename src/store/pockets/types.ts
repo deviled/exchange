@@ -1,9 +1,9 @@
 export interface Pocket {
 	id: number | string;
 	type: string;
-	balance: number;
+	balance: string;
 	symbol: string;
-	isActive?: boolean;
+	isMainPocket?: boolean;
 }
 
 export interface PocketsState {

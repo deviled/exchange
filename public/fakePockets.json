@@ -2,20 +2,20 @@
   {
     "id": 1,
     "type": "EUR",
-    "balance": 15.08,
+    "balance": "15.08",
     "symbol": "€",
-    "isActive": true
+    "isMainPocket": true
   },
   {
     "id": 2,
     "type": "GBP",
-    "balance": 1.99,
+    "balance": "1.99",
     "symbol": "£"
   },
   {
     "id": 3,
     "type": "USD",
-    "balance": 0.00,
+    "balance": "0",
     "symbol": "$"
   }
 ]

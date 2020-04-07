@@ -2,6 +2,7 @@ import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 import {AppDispatch, RootState} from '../index';
 import {CalcAmount, ExchangeState} from './types';
 import {selectCurrentExchangeRate} from '../currency/currencySlice';
+import {updateBasePocketBalance, updateTargetPocketBalance} from '../pockets/pocketsSlice';
 
 const initialState: ExchangeState = {
 	baseAmount: '0',
@@ -27,21 +28,39 @@ const exchangeSlice = createSlice({
 			}
 		},
 		calcBaseAmount: (state, action: PayloadAction<CalcAmount>) => {
-			if (action.payload.rate) {
-				const amount = parseFloat(action.payload.amount);
-				state.baseAmount = (amount / action.payload.rate).toString();
+			const amount = parseFloat(action.payload.amount);
+			if (amount && action.payload.rate) {
+				state.baseAmount = (amount / action.payload.rate).toFixed(2);
 			}
 		},
 		calcTargetAmount: (state, action: PayloadAction<CalcAmount>) => {
-			if (action.payload.rate) {
-				const amount = parseFloat(action.payload.amount);
-				state.targetAmount = (amount * action.payload.rate).toString();
+			const amount = parseFloat(action.payload.amount);
+			if (amount && action.payload.rate) {
+				state.targetAmount = (amount * action.payload.rate).toFixed(2);
 			}
 		}
 	},
 });
 
 export const {setTargetInputEdited, setBaseAmount, setTargetAmount, calcBaseAmount, calcTargetAmount} = exchangeSlice.actions;
+
+export const exchange = () => {
+	return async (dispatch: AppDispatch, getState: () => RootState) => {
+		const {basePocket,  targetPocket} = getState().pockets;
+		if (basePocket && targetPocket) {
+			const baseAmount = parseFloat(getState().exchange.baseAmount);
+			const targetAmount = parseFloat(getState().exchange.targetAmount);
+			const baseBalance = parseFloat(basePocket.balance);
+			const targetBalance = parseFloat(targetPocket.balance);
+			if (baseAmount <= baseBalance) {
+				dispatch(updateBasePocketBalance(baseBalance - baseAmount));
+				dispatch(updateTargetPocketBalance(targetBalance + targetAmount));
+				dispatch(setBaseAmount('0'));
+				dispatch(setTargetAmount('0'));
+			}
+		}
+	};
+};
 
 export const baseAmountUpdated = (amount: string) => {
 	return async (dispatch: AppDispatch, getState: () => RootState) => {
