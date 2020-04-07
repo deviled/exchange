@@ -2,7 +2,7 @@ import React, {ChangeEvent} from 'react';
 import {formatInput, isInputCorrect, normalizeInput} from './utils';
 import styles from './NumberInput.module.scss';
 
-interface NumberInputProps {
+export interface NumberInputProps {
 	dataQa?: string;
 	value: string;
 	isDisabled?: boolean;

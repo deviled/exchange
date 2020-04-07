@@ -11,6 +11,7 @@
     "project": "./tsconfig.json"
   },
   "rules": {
+    "jest/expect-expect": "off",
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/explicit-function-return-type": "off"
   },
