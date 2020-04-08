@@ -4,7 +4,7 @@ import {CurrencyState} from './types';
 import * as api from '../../utils/api';
 import {currencyRatesUpdated} from '../exchange/exchangeSlice';
 
-const initialState: CurrencyState = {
+export const initialState: CurrencyState = {
 	base: '',
 	rates: null,
 };

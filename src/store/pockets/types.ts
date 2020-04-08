@@ -9,7 +9,7 @@ export interface Pocket {
 export interface PocketsState {
 	isFetching: boolean;
 	all: Pocket[];
-	basePocket: Pocket | null;
-	targetPocket: Pocket | null;
+	basePocket: Pocket | undefined;
+	targetPocket: Pocket | undefined;
 }
 

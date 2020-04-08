@@ -4,7 +4,7 @@ import {CalcAmount, ExchangeState} from './types';
 import {selectCurrentExchangeRate} from '../currency/currencySlice';
 import {updateBasePocketBalance, updateTargetPocketBalance} from '../pockets/pocketsSlice';
 
-const initialState: ExchangeState = {
+export const initialState: ExchangeState = {
 	baseAmount: '0',
 	targetAmount: '0',
 	isTargetInputEdited: false,
@@ -27,18 +27,18 @@ const exchangeSlice = createSlice({
 				state.targetAmount = action.payload;
 			}
 		},
-		calcBaseAmount: (state, action: PayloadAction<CalcAmount>) => {
-			const amount = parseFloat(action.payload.amount);
-			if (amount && action.payload.rate) {
-				state.baseAmount = (amount / action.payload.rate).toFixed(2);
+		calcBaseAmount: (state, {payload}: PayloadAction<CalcAmount>) => {
+			const amount = parseFloat(payload.amount);
+			if (amount > 0 && payload.rate && payload.rate > 0) {
+				state.baseAmount = (amount / payload.rate).toFixed(2);
 			} else {
 				state.baseAmount = '0';
 			}
 		},
-		calcTargetAmount: (state, action: PayloadAction<CalcAmount>) => {
-			const amount = parseFloat(action.payload.amount);
-			if (amount && action.payload.rate) {
-				state.targetAmount = (amount * action.payload.rate).toFixed(2);
+		calcTargetAmount: (state, {payload}: PayloadAction<CalcAmount>) => {
+			const amount = parseFloat(payload.amount);
+			if (amount > 0 && payload.rate && payload.rate > 0) {
+				state.targetAmount = (amount * payload.rate).toFixed(2);
 			} else {
 				state.targetAmount = '0';
 			}

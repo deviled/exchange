@@ -1,21 +1,15 @@
 import {FETCH_RATES_API, fetchRatesBy} from '../api';
 
-const mockFetchReturn = (ok = true, returnValue: any) => {
-	return new Promise(resolve => (
-		resolve({
-			ok,
-			json: async () => {
-				return returnValue;
-			},
-		})
-	));
-};
-
 describe('api.ts', () => {
 	const setup = (ok = true) => {
-		window.fetch = jest.fn().mockReturnValue(
-			mockFetchReturn(ok, 'serverResult')
-		);
+		window.fetch = jest.fn().mockReturnValue(new Promise(resolve => (
+			resolve({
+				ok,
+				json: async () => {
+					return 'result';
+				},
+			})
+		)));
 	};
 
 	describe('fetchRatesBy', () => {
@@ -37,7 +31,7 @@ describe('api.ts', () => {
 		it('should return server result', async () => {
 			const {base} = setupFetchRates(true);
 			const result = await fetchRatesBy(base);
-			expect(result).toBe('serverResult');
+			expect(result).toBe('result');
 		});
 
 		it('should throw error if api call fails', async () => {

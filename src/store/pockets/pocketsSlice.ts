@@ -5,11 +5,11 @@ import * as api from '../../utils/api';
 import {fetchRatesBy} from '../currency/currencySlice';
 import {baseAmountUpdated, setBaseAmount, setTargetAmount, setTargetInputEdited} from '../exchange/exchangeSlice';
 
-const initialState: PocketsState = {
+export const initialState: PocketsState = {
 	isFetching: false,
 	all: [],
-	basePocket: null,
-	targetPocket: null,
+	basePocket: undefined,
+	targetPocket: undefined,
 };
 
 const pocketsSlice = createSlice({
@@ -20,16 +20,14 @@ const pocketsSlice = createSlice({
 			state.isFetching = action.payload;
 		},
 		setAllPockets: (state, action: PayloadAction<Pocket[]>) => {
-			if (Array.isArray(action.payload)) {
-				state.all = action.payload;
-			}
+			state.all = action.payload;
 		},
-		setBasePocket: (state, action: PayloadAction<Pocket | null>) => {
+		setBasePocket: (state, action: PayloadAction<PocketsState['basePocket']>) => {
 			if (action.payload) {
 				state.basePocket = action.payload;
 			}
 		},
-		setTargetPocket: (state, action: PayloadAction<Pocket | null>) => {
+		setTargetPocket: (state, action: PayloadAction<PocketsState['targetPocket']>) => {
 			if (action.payload) {
 				state.targetPocket = action.payload;
 			}

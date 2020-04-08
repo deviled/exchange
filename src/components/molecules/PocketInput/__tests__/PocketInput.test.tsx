@@ -1,9 +1,9 @@
 import React from 'react';
 import {shallow} from 'enzyme';
 import {PocketInputTemplate, PocketTemplateProps} from '../PocketInput';
-import {pocketMock} from '../__mocks__/pocketMock';
+import {mockPocket} from '../__mocks__/PocketInput.mock';
 
-const POCKET = '[data-qa="pocket"]';
+const POCKET_ELEMENT = '[data-qa="pocket"]';
 const POCKET_ERROR_LABEL = '[data-qa="pocketErrorLabel"]';
 
 describe('PocketInput.tsx', () => {
@@ -12,7 +12,7 @@ describe('PocketInput.tsx', () => {
             <PocketInputTemplate
                 dataQa={overrides?.dataQa}
                 pocketAmount={'10'}
-                pocket={pocketMock}
+                pocket={mockPocket}
                 options={[]}
                 onInputChange={() => undefined}
                 onPocketChange={() => undefined}
@@ -24,7 +24,7 @@ describe('PocketInput.tsx', () => {
 
     it('should render component', () => {
         const {wrapper} = setup({dataQa: 'pocket'});
-        expect(wrapper.exists(POCKET)).toBe(true);
+        expect(wrapper.exists(POCKET_ELEMENT)).toBe(true);
     });
 
     it('should not render error', () => {

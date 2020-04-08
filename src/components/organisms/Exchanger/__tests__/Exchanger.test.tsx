@@ -1,7 +1,7 @@
 import React from 'react';
 import {shallow} from 'enzyme';
 import {ExchangerTemplate, ExchangerTemplateProps} from '../Exchanger';
-import {basePocketMock, targetPocketMock} from '../__mocks__/pocketMock';
+import {mockBasePocket, mockTargetPocket} from '../__mocks__/Exchanger.mock';
 
 const EXCHANGER = '[data-qa="exchanger"]';
 const BASE_POCKET = '[dataQa="basePocket"]';
@@ -12,8 +12,8 @@ describe('Exchanger.tsx', () => {
     const setup = (overrides?: Partial<ExchangerTemplateProps>) => {
         const wrapper = shallow(
             <ExchangerTemplate
-                basePocket={basePocketMock}
-                targetPocket={targetPocketMock}
+                basePocket={mockBasePocket}
+                targetPocket={mockTargetPocket}
                 baseAmount={'0'}
                 targetAmount={'0'}
                 {...overrides}

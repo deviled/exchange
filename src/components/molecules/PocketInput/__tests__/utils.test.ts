@@ -1,11 +1,11 @@
 import {getBalanceLabel, pocketsToOptions} from '../utils';
-import {pocketMock} from '../__mocks__/pocketMock';
+import {mockPocket} from '../__mocks__/PocketInput.mock';
 
 describe('PocketInput/utils.ts', () => {
     describe('pocketsToOptions', () => {
         it('should mock pocket to select option', () => {
-            const result = pocketsToOptions(pocketMock);
-            expect(result).toEqual({value: pocketMock.id, label: pocketMock.type});
+            const result = pocketsToOptions(mockPocket);
+            expect(result).toEqual({value: mockPocket.id, label: mockPocket.type});
         });
     });
 
@@ -16,8 +16,8 @@ describe('PocketInput/utils.ts', () => {
         });
 
         it('should return pocket balance label', () => {
-            const result = getBalanceLabel(pocketMock);
-            expect(result).toBe(`Balance: ${pocketMock.balance}${pocketMock.symbol}`);
+            const result = getBalanceLabel(mockPocket);
+            expect(result).toBe(`Balance: ${mockPocket.balance}${mockPocket.symbol}`);
         });
     });
 });
