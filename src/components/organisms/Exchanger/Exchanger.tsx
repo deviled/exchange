@@ -9,15 +9,73 @@ import {Button} from '../../atoms/Button/Button';
 import {PocketInput} from '../../molecules/PocketInput/PocketInput';
 import {RateLabel} from '../../atoms/RateLabel/RateLabel';
 import styles from './Exchanger.module.scss';
+import {Pocket} from '../../../store/pockets/types';
+
+export interface ExchangerTemplateProps {
+	basePocket: Pocket | null;
+	baseAmount: string;
+	targetPocket: Pocket | null;
+	targetAmount: string;
+	onBaseAmountChanged?: (amount: string) => void;
+	onBasePocketChanged?: (pocketId: string) => void;
+	onTargetAmountChanged?: (amount: string) => void;
+	onTargetPocketChanged?: (pocketId: string) => void;
+	onExchangeButtonClicked?: () => void;
+	onSwapButtonClicked?: () => void;
+}
+
+export const ExchangerTemplate: React.FunctionComponent<ExchangerTemplateProps> = props => {
+	const {baseAmount, basePocket, targetAmount, targetPocket} = props;
+	const isBaseAmountZero = parseFloat(baseAmount) === 0;
+	const isBalanceExceeded = Boolean(basePocket && parseFloat(baseAmount) > parseFloat(basePocket?.balance));
+
+	return (
+		<div
+			data-qa='exchanger'
+			className={styles['exchange']}
+		>
+			<RateLabel />
+			<PocketInput
+				dataQa='basePocket'
+				pocket={basePocket}
+				pocketAmount={baseAmount}
+				onInputChange={props.onBaseAmountChanged}
+				onPocketChange={props.onBasePocketChanged}
+				isError={isBalanceExceeded}
+				errorMessage={'Exceeds balance'}
+			/>
+			<PocketInput
+				dataQa='targetPocket'
+				pocket={targetPocket}
+				pocketAmount={targetAmount}
+				onInputChange={props.onTargetAmountChanged}
+				onPocketChange={props.onTargetPocketChanged}
+			/>
+			<Button
+				dataQa='exchangeButton'
+				onClick={props.onExchangeButtonClicked}
+				tabIndex={0}
+				isDisabled={isBalanceExceeded || isBaseAmountZero}
+			>
+				{'Exchange'}
+			</Button>
+			<Button
+				dataQa='swapPocketsButton'
+				onClick={props.onSwapButtonClicked}
+				buttonStyles={styles['exchange__swap']}
+			>
+				{'Swap Pockets'}
+			</Button>
+		</div>
+	);
+};
 
 const FETCH_RATES_INTERVAL = 10000;
 
-export function Exchanger() {
+export const Exchanger: React.FunctionComponent = () => {
 	const dispatch: AppDispatch = useDispatch();
 	const {basePocket, targetPocket} = useSelector((state: RootState) => state.pockets);
 	const {baseAmount, targetAmount} = useSelector((state: RootState) => state.exchange);
-	const isBaseAmountZero = parseFloat(baseAmount) === 0;
-	const isBalanceExceeded = Boolean(basePocket && parseFloat(baseAmount) > parseFloat(basePocket.balance));
 
 	useInterval(async () => {
 		if (basePocket) {
@@ -26,45 +84,19 @@ export function Exchanger() {
 	}, FETCH_RATES_INTERVAL, [dispatch, basePocket]);
 
 	return (
-		<div className={styles['exchange']}>
-			<RateLabel />
-			<PocketInput
-				pocket={basePocket}
-				pocketAmount={baseAmount}
-				onInputChange={(amount: string) => {
-					dispatch(baseAmountUpdated(amount));
-				}}
-				onPocketChange={(pocketId: string) => {
-					dispatch(basePocketChanged(pocketId));
-				}}
-				isError={isBalanceExceeded}
-				errorMessage={'Exceeds balance'}
-			/>
-			<PocketInput
-				pocket={targetPocket}
-				pocketAmount={targetAmount}
-				onInputChange={(amount: string) => {
-					dispatch(targetAmountUpdated(amount));
-				}}
-				onPocketChange={(pocketId: string) => {
-					dispatch(targetPocketChanged(pocketId));
-				}}
-			/>
-			<Button
-				onClick={() => dispatch(exchange())}
-				tabIndex={0}
-				isDisabled={isBalanceExceeded || isBaseAmountZero}
-			>
-				{'Exchange'}
-			</Button>
-			<Button
-				onClick={() => dispatch(swapPockets())}
-				buttonStyles={styles['exchange__swap']}
-			>
-				{'Swap Pockets'}
-			</Button>
-		</div>
+		<ExchangerTemplate
+			baseAmount={baseAmount}
+			basePocket={basePocket}
+			onBaseAmountChanged={(amount: string) => dispatch(baseAmountUpdated(amount))}
+			onBasePocketChanged={(pocketId: string) => dispatch(basePocketChanged(pocketId))}
+			targetAmount={targetAmount}
+			targetPocket={targetPocket}
+			onTargetAmountChanged={(amount: string) => dispatch(targetAmountUpdated(amount))}
+			onTargetPocketChanged={(pocketId: string) => dispatch(targetPocketChanged(pocketId))}
+			onExchangeButtonClicked={() => dispatch(exchange())}
+			onSwapButtonClicked={() => dispatch(swapPockets())}
+		/>
 	);
-}
+};
 
 export default Exchanger;

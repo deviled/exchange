@@ -19,16 +19,14 @@ export const handleChangeEvent = (callback: NumberInputProps['onChange']) => {
 	};
 };
 
-export function NumberInput(props: NumberInputProps) {
-	return (
-		<input
-			className={[styles['number-input'], props.className].filter(Boolean).join(' ')}
-			disabled={props.isDisabled}
-			data-qa={props.dataQa || null}
-			type='text'
-			inputMode='decimal'
-			onChange={handleChangeEvent(props.onChange)}
-			value={formatInput(props.value)}
-		/>
-	);
-}
+export const NumberInput: React.FunctionComponent<NumberInputProps> = props => (
+	<input
+		className={[styles['number-input'], props.className].filter(Boolean).join(' ')}
+		disabled={props.isDisabled}
+		data-qa={props.dataQa || null}
+		type='text'
+		inputMode='decimal'
+		onChange={handleChangeEvent(props.onChange)}
+		value={formatInput(props.value)}
+	/>
+);
