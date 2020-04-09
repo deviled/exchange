@@ -21,7 +21,7 @@ export interface PocketTemplateProps extends PocketProps {
 	options: Array<{value: any; label: string}>;
 }
 
-export const PocketInputTemplate : React.FunctionComponent<PocketTemplateProps> = props => (
+export const PocketInputTemplate: React.FunctionComponent<PocketTemplateProps> = props => (
 	<div
 		data-qa={props.dataQa}
 		className={styles['pocket']}

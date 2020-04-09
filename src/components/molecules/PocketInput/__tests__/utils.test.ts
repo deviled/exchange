@@ -11,7 +11,7 @@ describe('PocketInput/utils.ts', () => {
 
     describe('getBalanceLabel', () => {
         it('should return null if no pocket', () => {
-            const result = getBalanceLabel(null);
+            const result = getBalanceLabel(undefined);
             expect(result).toBe(null);
         });
 

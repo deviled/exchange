@@ -34,7 +34,10 @@ export const ExchangerTemplate: React.FunctionComponent<ExchangerTemplateProps> 
 			data-qa='exchanger'
 			className={styles['exchange']}
 		>
-			<RateLabel />
+			<div className={styles['exchange__rates-label']}>
+				<RateLabel />
+			</div>
+
 			<PocketInput
 				dataQa='basePocket'
 				pocket={basePocket}
@@ -44,6 +47,7 @@ export const ExchangerTemplate: React.FunctionComponent<ExchangerTemplateProps> 
 				isError={isBalanceExceeded}
 				errorMessage={'Exceeds balance'}
 			/>
+
 			<PocketInput
 				dataQa='targetPocket'
 				pocket={targetPocket}
@@ -51,6 +55,7 @@ export const ExchangerTemplate: React.FunctionComponent<ExchangerTemplateProps> 
 				onInputChange={props.onTargetAmountChanged}
 				onPocketChange={props.onTargetPocketChanged}
 			/>
+
 			<Button
 				dataQa='exchangeButton'
 				onClick={props.onExchangeButtonClicked}
@@ -59,6 +64,7 @@ export const ExchangerTemplate: React.FunctionComponent<ExchangerTemplateProps> 
 			>
 				{'Exchange'}
 			</Button>
+
 			<Button
 				dataQa='swapPocketsButton'
 				onClick={props.onSwapButtonClicked}

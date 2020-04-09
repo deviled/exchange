@@ -16,11 +16,11 @@
   transition: 250ms background linear;
 
   &:hover {
-    background: lighten($primaryColor, 10%);
+    background: lighten($primaryColor, 20%);
   }
 
   &:disabled {
-    background: lighten($primaryColor, 30%);
+    background: lighten($primaryColor, 40%);
   }
 
   &:last-child {

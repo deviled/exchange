@@ -1,11 +1,12 @@
 @import '../../../styles/variables';
 
 .rate-label {
-  width: 100%;
   font-size: 0.875rem;
   color: $textColor;
   font-weight: bold;
   text-align: center;
-  margin-top: 1rem;
-  margin-bottom: 2rem;
+  padding: 0.5rem 1.5rem;
+  background-color: white;
+  border: 1px solid $borderColor;
+  border-radius: 1rem;
 }
