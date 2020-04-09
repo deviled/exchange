@@ -1,5 +1,5 @@
 export interface Pocket {
-	id: number | string;
+	id: number;
 	type: string;
 	balance: string;
 	symbol: string;

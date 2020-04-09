@@ -9,7 +9,7 @@ import {getBalanceLabel, pocketsToOptions} from './utils';
 
 export interface PocketProps {
 	dataQa?: string;
-	pocket: Pocket | null;
+	pocket: Pocket | undefined;
 	pocketAmount: string;
 	isError?: boolean;
 	errorMessage?: string;

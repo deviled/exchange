@@ -1,3 +1,4 @@
+import to from 'await-to-js';
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 import {Pocket, PocketsState} from './types';
 import {AppDispatch, RootState} from '../index';
@@ -61,17 +62,14 @@ export const selectPocketById = (state: RootState, id: Pocket['id']) => {
 export const fetchPockets = () => {
 	return async (dispatch: AppDispatch) => {
 		dispatch(setIsFetching(true));
-		try {
-			const pockets = await api.fetchPockets();
-			if (pockets) {
-				dispatch(setAllPockets(pockets));
-				dispatch(setBasePocket(pockets.find((p: Pocket) => p.isMainPocket)));
-				dispatch(setTargetPocket(pockets.find((p: Pocket) => !p.isMainPocket)));
-			}
-		} catch (error) {
-			console.error(error);
+		const [err, pockets] = await to(api.fetchPockets());
+		if (pockets) {
+			dispatch(setAllPockets(pockets));
+			dispatch(setBasePocket(pockets.find((p: Pocket) => p.isMainPocket)));
+			dispatch(setTargetPocket(pockets.find((p: Pocket) => !p.isMainPocket)));
 		}
 		dispatch(setIsFetching(false));
+		return err;
 	};
 };
 

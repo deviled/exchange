@@ -9,12 +9,12 @@ import {Button} from '../../atoms/Button/Button';
 import {PocketInput} from '../../molecules/PocketInput/PocketInput';
 import {RateLabel} from '../../atoms/RateLabel/RateLabel';
 import styles from './Exchanger.module.scss';
-import {Pocket} from '../../../store/pockets/types';
+import {PocketsState} from '../../../store/pockets/types';
 
 export interface ExchangerTemplateProps {
-	basePocket: Pocket | null;
+	basePocket: PocketsState['basePocket'];
 	baseAmount: string;
-	targetPocket: Pocket | null;
+	targetPocket: PocketsState['targetPocket'];
 	targetAmount: string;
 	onBaseAmountChanged?: (amount: string) => void;
 	onBasePocketChanged?: (pocketId: string) => void;

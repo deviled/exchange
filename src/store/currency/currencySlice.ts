@@ -1,3 +1,4 @@
+import to from 'await-to-js';
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 import {AppDispatch, RootState} from '../index';
 import {CurrencyState} from './types';
@@ -34,16 +35,13 @@ export const selectCurrentExchangeRate = (state: RootState): number | null => {
 
 export const fetchRatesBy = (base: CurrencyState['base'] = '') => {
 	return async (dispatch: AppDispatch) => {
-		try {
-			const result = await api.fetchRatesBy(base);
-			if (result) {
-				dispatch(setCurrencyBase(result.base));
-				dispatch(setCurrencyRates(result.rates));
-				dispatch(currencyRatesUpdated());
-			}
-		} catch (error) {
-			console.error(error);
+		const [err, result] = await to(api.fetchRatesBy(base));
+		if (result) {
+			dispatch(setCurrencyBase(result.base));
+			dispatch(setCurrencyRates(result.rates));
+			dispatch(currencyRatesUpdated());
 		}
+		return err;
 	};
 };
 

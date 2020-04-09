@@ -1,35 +1,34 @@
-import thunk, {ThunkDispatch} from 'redux-thunk';
-import configureMockStore from 'redux-mock-store';
-import {AnyAction} from 'redux';
-import {PocketsState} from '../types';
 import reducer, {
-    fetchPockets,
     initialState,
+    selectPocketById,
     setAllPockets,
     setBasePocket,
     setIsFetching,
     setTargetPocket,
     updatePocket
 } from '../pocketsSlice';
-import {mockPockets} from '../__mocks__/pocketsSlice.mock';
-
-type AppDispatch = ThunkDispatch<PocketsState, void, AnyAction>;
-
-const mockStore = configureMockStore<PocketsState, AppDispatch>([thunk]);
-
-jest.mock('../../../utils/api.ts', () => ({
-    fetchPockets: jest.fn(() => Promise.resolve(mockPockets)),
-}));
+import {mockPockets, rootState} from '../../__mocks__/rootState.mock';
 
 describe('pocketsSlice.ts', () => {
-    afterAll(() => {
-        jest.clearAllMocks();
-    });
-
     it('should return the initial state', () => {
         const nextState = initialState;
         const result = reducer(undefined, {type: undefined});
         expect(result).toEqual(nextState);
+    });
+
+    describe('selectPocketById ', () => {
+        it('should return null if pocket is not found', () => {
+            const pocket = selectPocketById(rootState, 4);
+            expect(pocket).toBe(null);
+        });
+    });
+
+    describe('setIsFetching', () => {
+        it('should set all pockets', () => {
+            const nextState = {...initialState, isFetching: true};
+            const result = reducer(initialState, setIsFetching(true));
+            expect(result).toEqual(nextState);
+        });
     });
 
     describe('setAllPockets', () => {
@@ -92,21 +91,6 @@ describe('pocketsSlice.ts', () => {
             expect(result.all[1]).toEqual(updatedPocket);
             expect(result.targetPocket).toEqual(updatedPocket);
             expect(result.basePocket).toEqual(state.basePocket);
-        });
-    });
-
-    describe('fetchPockets', () => {
-        it('should dispatch correct action when pockets are fetched', async () => {
-            const store = mockStore(initialState);
-            await store.dispatch(fetchPockets());
-            const expectedActions =  [
-                setIsFetching(true),
-                setAllPockets(mockPockets),
-                setBasePocket(mockPockets.find(p => p.isMainPocket)),
-                setTargetPocket(mockPockets.find(p => !p.isMainPocket)),
-                setIsFetching(false),
-            ];
-            expect(store.getActions()).toEqual(expectedActions);
         });
     });
 });

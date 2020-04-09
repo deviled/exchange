@@ -1,24 +1,25 @@
 import {CurrencyState} from '../store/currency/types';
+import to from 'await-to-js';
 
 export const FETCH_RATES_API = 'https://api.exchangeratesapi.io/latest';
 export const FETCH_POCKETS_API = '/fakePockets.json';
 
 export async function fetchRatesBy(base: CurrencyState['base']) {
-	const resp = await fetch(`${FETCH_RATES_API}?base=${base}`, {
+	const [err, resp] = await to(fetch(`${FETCH_RATES_API}?base=${base}`, {
 		method: 'GET',
-	});
+	}));
 	if (resp?.ok) {
 		return await resp.json();
 	}
-	throw new Error('Error while fetching currency rates.');
+	return err;
 }
 
 export async function fetchPockets() {
-	const resp = await fetch(FETCH_POCKETS_API, {
+	const [err, resp] = await to(fetch(FETCH_POCKETS_API, {
 		method: 'GET',
-	});
+	}));
 	if (resp?.ok) {
 		return await resp.json();
 	}
-	throw new Error('Error while fetching pockets.');
+	return err;
 }

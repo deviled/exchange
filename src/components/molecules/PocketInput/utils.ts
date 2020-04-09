@@ -6,7 +6,7 @@ export const pocketsToOptions = (pocket: Pocket) => ({
 	label: pocket.type,
 });
 
-export const getBalanceLabel = (pocket: Pocket | null) => {
+export const getBalanceLabel = (pocket: Pocket | undefined) => {
 	if (pocket) {
 		const balance = parseFloat(pocket.balance);
 		return `Balance: ${formatDecimal(balance, 2)}${pocket?.symbol}`;
